@@ -63,7 +63,7 @@ helpdesk-app/
 
 ### 1. Clone the Repository
 ```bash
-git clone [https://github.com/TeachFeastKunal/helpdesk-app.git](https://github.com/TeachFeastKunal/helpdesk-app.git)
+git clone https://github.com/TeachFeastKunal/helpdesk-app.git
 cd helpdesk-app
 ```
 
