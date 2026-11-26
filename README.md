@@ -71,6 +71,17 @@ cd helpdesk-app
 ```bash
 cd server
 npm install
+cp .env.example .env
+# Fill in your DATABASE_URL, JWT_SECRET, EMAIL_USER, and EMAIL_PASS in .env
+npx prisma migrate dev
+npm run dev
+```
+
+### 3. Setup & Start the Frontend (`client/`)
+```bash
+cd client
+npm install
+npm run dev
 ```
 
 Create a `.env` file in `server/` based on `.env.example`:
