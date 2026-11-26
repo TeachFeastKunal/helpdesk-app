@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  AGENT
+  ADMIN
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum Status {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+model User {
+  id                String    @id @default(uuid())
+  name              String
+  email             String    @unique
+  passwordHash      String    @map("password_hash")
+  role              Role      @default(USER)
+  isVerified        Boolean   @default(false) @map("is_verified")
+  verificationToken String?   @map("verification_token")
+  tokenExpiresAt    DateTime? @map("token_expires_at")
+  resetToken          String?   @map("reset_token")
+  resetTokenExpiresAt DateTime? @map("reset_token_expires_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  createdTickets  Ticket[]        @relation("CreatedTickets")
+  assignedTickets Ticket[]        @relation("AssignedTickets")
+  comments        TicketComment[]
+
+  @@map("users")
+}
+
+model Ticket {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  priority    Priority @default(MEDIUM)
+  status      Status   @default(OPEN)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  createdById  String  @map("created_by")
+  createdBy    User    @relation("CreatedTickets", fields: [createdById], references: [id], onDelete: Cascade)
+
+  assignedToId String? @map("assigned_to")
+  assignedTo   User?   @relation("AssignedTickets", fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  comments TicketComment[]
+
+  @@map("tickets")
+}
+
+model TicketComment {
+  id        String   @id @default(uuid())
+  message   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  ticketId String @map("ticket_id")
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ticket_comments")
+}
